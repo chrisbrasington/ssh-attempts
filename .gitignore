@@ -1,3 +1,6 @@
 *.txt
 logs
 *log*
+*csv
+dev
+*html
