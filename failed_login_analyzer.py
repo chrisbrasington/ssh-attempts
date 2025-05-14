@@ -11,6 +11,7 @@ class FailedLoginAnalyzer:
         self.log_glob = log_glob
         self.failed_attempts = defaultdict(int)
         self.success_attempts = defaultdict(int)
+        self.failed_ips = set()  # Store bad actor IPs
         self.success_lines = []  # Store raw success lines
         self.dates = []
         self.total_failed = 0
@@ -18,7 +19,7 @@ class FailedLoginAnalyzer:
 
         # Match failed (valid and invalid users)
         self.failed_pattern = re.compile(
-            r"^([A-Z][a-z]{2} +\d+ \d{2}:\d{2}:\d{2}) .*sshd.*Failed password for (invalid user )?(\w+)"
+            r"^([A-Z][a-z]{2} +\d+ \d{2}:\d{2}:\d{2}) .*sshd.*Failed password for (invalid user )?(\w+) from (\S+)"
         )
         # Match successful login
         self.success_pattern = re.compile(
@@ -43,8 +44,9 @@ class FailedLoginAnalyzer:
             # Check for failed login
             failed_match = self.failed_pattern.search(line)
             if failed_match:
-                date_str, _, user = failed_match.groups()
+                date_str, _, user, ip = failed_match.groups()
                 self.failed_attempts[user] += 1
+                self.failed_ips.add(ip)  # Add IP to the bad actor set
                 self.total_failed += 1
                 try:
                     self.dates.append(self._parse_date(date_str))
@@ -105,6 +107,13 @@ class FailedLoginAnalyzer:
         print("\n📋 Raw Successful Login Data:")
         for line in self.success_lines:
             print(line)
+
+        # Print bad actor IPs
+        print("\n🚨 Bad Actor IPs (Failed Login Attempts):")
+        if self.failed_ips:
+            print(", ".join(sorted(self.failed_ips)))
+        else:
+            print("  No bad actor IPs found.")
 
 
 if __name__ == "__main__":
