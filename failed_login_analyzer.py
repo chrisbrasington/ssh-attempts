@@ -109,11 +109,11 @@ class FailedLoginAnalyzer:
             print(line)
 
         # Print bad actor IPs
-        print("\n🚨 Bad Actor IPs (Failed Login Attempts):")
-        if self.failed_ips:
-            print(", ".join(sorted(self.failed_ips)))
-        else:
-            print("  No bad actor IPs found.")
+        #print("\n🚨 Bad Actor IPs (Failed Login Attempts):")
+        #if self.failed_ips:
+        #    print(", ".join(sorted(self.failed_ips)))
+        #else:
+        #    print("  No bad actor IPs found.")
 
 
 if __name__ == "__main__":
