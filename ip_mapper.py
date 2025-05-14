@@ -24,8 +24,11 @@ def init_csv():
             writer.writerow(["IP", "City", "Region", "Country", "Location"])
 
 def map_ips(ip_list):
+    total = len(ip_list)
     m = folium.Map(location=[0, 0], zoom_start=2)
-    for ip in ip_list:
+
+    for idx, ip in enumerate(ip_list, start=1):
+        print(f"[{idx}/{total}] Checking {ip}...")
         try:
             r = requests.get(f"https://ipinfo.io/{ip}/json", timeout=10)
             r.raise_for_status()
